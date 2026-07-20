@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Library Management System · SQL Mock</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@200;300;400;600;700;800&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Nunito', sans-serif;
+            color: #e8e8e8;
+            background: #0B0D10;
+            line-height: 1.6;
+            padding: 30px 5vw;
+            min-height: 100vh;
+        }
+        a {
+            text-decoration: none;
+            color: #e53935;
+        }
+        a:hover {
+            color: #ff6b6b;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 20px;
+        }
+        .header .badge {
+            display: inline-block;
+            background: rgba(229, 57, 53, 0.15);
+            color: #e53935;
+            padding: 4px 16px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+            border: 1px solid rgba(229, 57, 53, 0.15);
+        }
+        .header h1 {
+            font-size: 30px;
+            font-weight: 200;
+            color: #fff;
+            letter-spacing: -0.5px;
+        }
+        .header h1 .highlight {
+            color: #e53935;
+        }
+        .header .sub {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.5);
+            max-width: 600px;
+            margin: 4px auto 0;
+        }
+
+        /* SQL Query Display */
+        .sql-query-box {
+            background: rgba(229, 57, 53, 0.06);
+            border: 1px solid rgba(229, 57, 53, 0.15);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #7fffb0;
+            overflow-x: auto;
+        }
+        .sql-query-box .label {
+            font-family: 'Nunito', sans-serif;
+            color: #888;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 14px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+        .card h2 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .card h2 .highlight {
+            color: #e53935;
+        }
+
+        /* Grids */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-block;
+            padding: 8px 18px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Nunito', sans-serif;
+        }
+        .btn-primary {
+            background: #e53935;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #c62828;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(229, 57, 53, 0.25);
+        }
+        .btn-outline {
+            background: transparent;
+            color: #e53935;
+            border: 1.5px solid rgba(229, 57, 53, 0.3);
+        }
+        .btn-outline:hover {
+            background: rgba(229, 57, 53, 0.08);
+            border-color: #e53935;
+        }
+        .btn-sm {
+            padding: 4px 12px;
+            font-size: 11px;
+        }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 8px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        table th {
+            text-align: left;
+            color: #888;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: #ccc;
+        }
+        table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        .table-highlight td {
+            background: rgba(229, 57, 53, 0.06);
+        }
+
+        /* Stats */
+        .stat-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 10px;
+            padding: 14px 16px;
+            text-align: center;
+        }
+        .stat-box .number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #e53935;
+            line-height: 1.2;
+        }
+        .stat-box .desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        /* Form */
+        .form-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 8px 0;
+            align-items: center;
+        }
+        .form-group label {
+            font-size: 13px;
+            color: #aaa;
+            min-width: 80px;
+        }
+        .form-group input,
+        .form-group select {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 8px 12px;
+            color: #fff;
+            font-family: 'Nunito', sans-serif;
+            font-size: 13px;
+            flex: 1;
+            min-width: 120px;
+        }
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #e53935;
+        }
+        .form-group input::placeholder {
+            color: #666;
+        }
+
+        /* Tags */
+        .tag-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+        .tag-group .tag {
+            background: rgba(229, 57, 53, 0.08);
+            padding: 4px 14px;
+            border-radius: 999px;
+            font-size: 11px;
+            color: #e53935;
+            font-weight: 600;
+        }
+
+        /* Status */
+        .status-msg {
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            margin: 8px 0;
+        }
+        .status-msg.success {
+            background: rgba(46, 213, 115, 0.08);
+            border: 1px solid rgba(46, 213, 115, 0.15);
+            color: #7fffb0;
+        }
+        .status-msg.error {
+            background: rgba(229, 57, 53, 0.08);
+            border: 1px solid rgba(229, 57, 53, 0.15);
+            color: #ff6b6b;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px 0 8px;
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            margin-top: 20px;
+        }
+        .footer p {
+            font-size: 13px;
+            color: #666;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2,
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .header h1 {
+                font-size: 24px;
+            }
+            .form-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .form-group label {
+                min-width: unset;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+
+        <!-- ===== HEADER ===== -->
+        <header class="header">
+            <span class="badge">SQL Mock · Interactive Demo</span>
+            <h1>Library Management <span class="highlight">System</span></h1>
+            <p class="sub">Simulated SQL operations — CREATE, INSERT, SELECT, JOIN, DELETE</p>
+        </header>
+
+        <!-- ===== STATUS ===== -->
+        <div id="statusMessage"></div>
+
+        <!-- ===== STATS ===== -->
+        <div class="grid-3" style="margin-bottom:16px;">
+            <div class="stat-box">
+                <div class="number" id="totalBooks">0</div>
+                <div class="desc">Books in Library</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="totalReaders">0</div>
+                <div class="desc">Registered Readers</div>
+            </div>
+            <div class="stat-box">
+                <div class="number" id="totalLoans">0</div>
+                <div class="desc">Active Loans</div>
+            </div>
+        </div>
+
+        <!-- ===== SQL QUERY DISPLAY ===== -->
+        <div class="sql-query-box" id="sqlDisplay">
+            <div class="label">📜 Last SQL Query</div>
+            <span id="sqlText">-- No query executed yet. Click a button below.</span>
+        </div>
+
+        <!-- ===== CARDS ===== -->
+        <div class="grid-2">
+
+            <!-- ===== CARD: BOOKS ===== -->
+            <div class="card">
+                <h2>📚 Books <span class="highlight">(SELECT * FROM books)</span></h2>
+                <div class="table-wrap">
+                    <table id="booksTable">
+                        <thead>
+                            <tr><th>ISBN</th><th>Title</th><th>Author</th><th>Copies</th></tr>
+                        </thead>
+                        <tbody id="booksBody">
+                            <tr><td colspan="4" style="text-align:center;color:#666;">No books loaded</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <label>Add Book</label>
+                    <input type="text" id="bookIsbn" placeholder="ISBN (ex: 12345678)" style="flex:0.7;min-width:100px;" />
+                    <input type="text" id="bookTitle" placeholder="Title" style="flex:1;" />
+                    <input type="text" id="bookAuthor" placeholder="Author" style="flex:0.7;" />
+                    <button class="btn btn-primary btn-sm" onclick="addBook()">INSERT</button>
+                </div>
+                <div class="form-group">
+                    <label>Remove</label>
+                    <input type="text" id="bookRemove" placeholder="ISBN to delete" style="flex:1;" />
+                    <button class="btn btn-outline btn-sm" onclick="removeBook()">DELETE</button>
+                </div>
+                <div class="tag-group">
+                    <span class="tag">CREATE TABLE books</span>
+                    <span class="tag">INSERT INTO</span>
+                    <span class="tag">DELETE FROM</span>
+                    <span class="tag">SELECT *</span>
+                </div>
+            </div>
+
+            <!-- ===== CARD: READERS ===== -->
+            <div class="card">
+                <h2>👤 Readers <span class="highlight">(SELECT * FROM readers)</span></h2>
+                <div class="table-wrap">
+                    <table id="readersTable">
+                        <thead>
+                            <tr><th>RM</th><th>Name</th><th>Email</th></tr>
+                        </thead>
+                        <tbody id="readersBody">
+                            <tr><td colspan="3" style="text-align:center;color:#666;">No readers loaded</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <label>Add Reader</label>
+                    <input type="text" id="readerRm" placeholder="RM (ex: 2025001)" style="flex:0.7;min-width:100px;" />
+                    <input type="text" id="readerName" placeholder="Name" style="flex:1;" />
+                    <input type="text" id="readerEmail" placeholder="Email" style="flex:0.8;" />
+                    <button class="btn btn-primary btn-sm" onclick="addReader()">INSERT</button>
+                </div>
+                <div class="form-group">
+                    <label>Remove</label>
+                    <input type="text" id="readerRemove" placeholder="RM to delete" style="flex:1;" />
+                    <button class="btn btn-outline btn-sm" onclick="removeReader()">DELETE</button>
+                </div>
+                <div class="tag-group">
+                    <span class="tag">CREATE TABLE readers</span>
+                    <span class="tag">INSERT INTO</span>
+                    <span class="tag">DELETE FROM</span>
+                    <span class="tag">SELECT *</span>
+                </div>
+            </div>
+
+            <!-- ===== CARD: LOANS ===== -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <h2>🔄 Loans <span class="highlight">(SELECT * FROM loans JOIN readers ON ...)</span></h2>
+                <div class="table-wrap">
+                    <table id="loansTable">
+                        <thead>
+                            <tr><th>Loan ID</th><th>Reader</th><th>ISBN</th><th>Loan Date</th><th>Return Date</th><th>Action</th></tr>
+                        </thead>
+                        <tbody id="loansBody">
+                            <tr><td colspan="6" style="text-align:center;color:#666;">No loans loaded</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-group">
+                    <label>New Loan</label>
+                    <select id="loanReader" style="flex:0.8;"></select>
+                    <select id="loanBook" style="flex:0.8;"></select>
+                    <button class="btn btn-primary btn-sm" onclick="addLoan()">INSERT</button>
+                </div>
+                <div class="form-group">
+                    <label>Return</label>
+                    <input type="text" id="loanReturn" placeholder="Loan ID to return" style="flex:0.5;" />
+                    <button class="btn btn-outline btn-sm" onclick="returnLoan()">UPDATE · RETURN</button>
+                </div>
+                <div class="sql-query-box" style="margin-top:8px;border-color:rgba(229,57,53,0.08);">
+                    <div class="label">🔗 JOIN Example</div>
+                    <span style="font-family:'Courier New',monospace;font-size:12px;color:#7fffb0;">
+                        SELECT loans.id, readers.name, books.title, loans.loan_date<br>
+                        FROM loans<br>
+                        INNER JOIN readers ON loans.reader_id = readers.id<br>
+                        INNER JOIN books ON loans.book_isbn = books.isbn
+                    </span>
+                </div>
+                <div class="tag-group">
+                    <span class="tag">INSERT INTO loans</span>
+                    <span class="tag">UPDATE loans SET returned = TRUE</span>
+                    <span class="tag">SELECT ... JOIN</span>
+                    <span class="tag">Foreign Key</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== FOOTER ===== -->
+        <footer class="footer">
+            <p>Mock SQL operations · DDL · DML · SELECT · JOIN · Transactions</p>
+            <p style="font-size:12px;color:#555;margin-top:2px;">Ariane Lesnyak · Taxonomy Analyst · Labeling Operations</p>
+        </footer>
+
+    </div>
+
+    <script>
+        // ===== DATA STORE =====
+        let books = [];
+        let readers = [];
+        let loans = [];
+        let loanIdCounter = 1;
+
+        // ===== INIT =====
+        function init() {
+            // Seed books
+            books = [
+                { isbn: '12345678', title: 'Database Design', author: 'C.J. Date', copies: 3 },
+                { isbn: '87654321', title: 'SQL Fundamentals', author: 'John Smith', copies: 2 },
+                { isbn: '11223344', title: 'Relational Theory', author: 'E.F. Codd', copies: 1 },
+            ];
+            // Seed readers
+            readers = [
+                { rm: '2025001', name: 'Ana Silva', email: 'ana@email.com' },
+                { rm: '2025002', name: 'Carlos Santos', email: 'carlos@email.com' },
+            ];
+            // Seed loans
+            loans = [
+                { id: loanIdCounter++, readerRm: '2025001', isbn: '12345678', loanDate: '2025-01-10', returnDate: null },
+                { id: loanIdCounter++, readerRm: '2025002', isbn: '87654321', loanDate: '2025-01-12', returnDate: null },
+            ];
+
+            renderAll();
+            updateStats();
+            updateSelects();
+            setSQL('-- Database initialized with sample data');
+            showStatus('System ready. Sample data loaded.', 'success');
+        }
+
+        // ===== RENDER =====
+        function renderBooks() {
+            const tbody = document.getElementById('booksBody');
+            if (books.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#666;">No books</td></tr>';
+                return;
+            }
+            tbody.innerHTML = books.map(b =>
+                `<tr><td>${b.isbn}</td><td>${b.title}</td><td>${b.author}</td><td>${b.copies}</td></tr>`
+            ).join('');
+        }
+
+        function renderReaders() {
+            const tbody = document.getElementById('readersBody');
+            if (readers.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#666;">No readers</td></tr>';
+                return;
+            }
+            tbody.innerHTML = readers.map(r =>
+                `<tr><td>${r.rm}</td><td>${r.name}</td><td>${r.email}</td></tr>`
+            ).join('');
+        }
+
+        function renderLoans() {
+            const tbody = document.getElementById('loansBody');
+            if (loans.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#666;">No loans</td></tr>';
+                return;
+            }
+            tbody.innerHTML = loans.map(l => {
+                const reader = readers.find(r => r.rm === l.readerRm);
+                const book = books.find(b => b.isbn === l.isbn);
+                const readerName = reader ? reader.name : l.readerRm;
+                const bookTitle = book ? book.title : l.isbn;
+                const isActive = l.returnDate === null;
+                return `<tr>
+                    <td>${l.id}</td>
+                    <td>${readerName}</td>
+                    <td>${bookTitle}</td>
+                    <td>${l.loanDate}</td>
+                    <td>${l.returnDate || '—'}</td>
+                    <td>${isActive ? `<button class="btn btn-outline btn-sm" onclick="returnLoanById(${l.id})">Return</button>` : 'Returned'}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function renderAll() {
+            renderBooks();
+            renderReaders();
+            renderLoans();
+        }
+
+        function updateStats() {
+            document.getElementById('totalBooks').textContent = books.length;
+            document.getElementById('totalReaders').textContent = readers.length;
+            document.getElementById('totalLoans').textContent = loans.filter(l => l.returnDate === null).length;
+        }
+
+        function updateSelects() {
+            const readerSelect = document.getElementById('loanReader');
+            const bookSelect = document.getElementById('loanBook');
+            readerSelect.innerHTML = readers.map(r =>
+                `<option value="${r.rm}">${r.rm} - ${r.name}</option>`
+            ).join('');
+            bookSelect.innerHTML = books.map(b =>
+                `<option value="${b.isbn}">${b.isbn} - ${b.title}</option>`
+            ).join('');
+        }
+
+        function setSQL(sql) {
+            document.getElementById('sqlText').textContent = sql;
+        }
+
+        function showStatus(msg, type = 'success') {
+            const el = document.getElementById('statusMessage');
+            el.innerHTML = `<div class="status-msg ${type}">${msg}</div>`;
+            setTimeout(() => { el.innerHTML = ''; }, 4000);
+        }
+
+        // ===== SQL OPERATIONS =====
+
+        // --- BOOKS ---
+        function addBook() {
+            const isbn = document.getElementById('bookIsbn').value.trim();
+            const title = document.getElementById('bookTitle').value.trim();
+            const author = document.getElementById('bookAuthor').value.trim();
+            if (!isbn || !title || !author) {
+                showStatus('Please fill all fields', 'error');
+                return;
+            }
+            if (books.find(b => b.isbn === isbn)) {
+                showStatus('ISBN already exists', 'error');
+                return;
+            }
+            books.push({ isbn, title, author, copies: 1 });
+            document.getElementById('bookIsbn').value = '';
+            document.getElementById('bookTitle').value = '';
+            document.getElementById('bookAuthor').value = '';
+            renderAll();
+            updateStats();
+            updateSelects();
+            setSQL(`INSERT INTO books (isbn, title, author, copies) VALUES ('${isbn}', '${title}', '${author}', 1);`);
+            showStatus(`Book "${title}" added successfully`, 'success');
+        }
+
+        function removeBook() {
+            const isbn = document.getElementById('bookRemove').value.trim();
+            if (!isbn) { showStatus('Enter an ISBN', 'error'); return; }
+            const idx = books.findIndex(b => b.isbn === isbn);
+            if (idx === -1) { showStatus('Book not found', 'error'); return; }
+            const title = books[idx].title;
+            // Check if loaned
+            if (loans.some(l => l.isbn === isbn && l.returnDate === null)) {
+                showStatus('Cannot delete: book is currently on loan', 'error');
+                return;
+            }
+            books.splice(idx, 1);
+            document.getElementById('bookRemove').value = '';
+            renderAll();
+            updateStats();
+            updateSelects();
+            setSQL(`DELETE FROM books WHERE isbn = '${isbn}';`);
+            showStatus(`Book "${title}" deleted`, 'success');
+        }
+
+        // --- READERS ---
+        function addReader() {
+            const rm = document.getElementById('readerRm').value.trim();
+            const name = document.getElementById('readerName').value.trim();
+            const email = document.getElementById('readerEmail').value.trim();
+            if (!rm || !name || !email) {
+                showStatus('Please fill all fields', 'error');
+                return;
+            }
+            if (readers.find(r => r.rm === rm)) {
+                showStatus('RM already exists', 'error');
+                return;
+            }
+            readers.push({ rm, name, email });
+            document.getElementById('readerRm').value = '';
+            document.getElementById('readerName').value = '';
+            document.getElementById('readerEmail').value = '';
+            renderAll();
+            updateStats();
+            updateSelects();
+            setSQL(`INSERT INTO readers (rm, name, email) VALUES ('${rm}', '${name}', '${email}');`);
+            showStatus(`Reader "${name}" added`, 'success');
+        }
+
+        function removeReader() {
+            const rm = document.getElementById('readerRemove').value.trim();
+            if (!rm) { showStatus('Enter an RM', 'error'); return; }
+            const idx = readers.findIndex(r => r.rm === rm);
+            if (idx === -1) { showStatus('Reader not found', 'error'); return; }
+            const name = readers[idx].name;
+            if (loans.some(l => l.readerRm === rm && l.returnDate === null)) {
+                showStatus('Cannot delete: reader has active loans', 'error');
+                return;
+            }
+            readers.splice(idx, 1);
+            document.getElementById('readerRemove').value = '';
+            renderAll();
+            updateStats();
+            updateSelects();
+            setSQL(`DELETE FROM readers WHERE rm = '${rm}';`);
+            showStatus(`Reader "${name}" deleted`, 'success');
+        }
+
+        // --- LOANS ---
+        function addLoan() {
+            const readerRm = document.getElementById('loanReader').value;
+            const isbn = document.getElementById('loanBook').value;
+            if (!readerRm || !isbn) {
+                showStatus('Select a reader and a book', 'error');
+                return;
+            }
+            // Check if book available
+            const book = books.find(b => b.isbn === isbn);
+            if (!book) { showStatus('Book not found', 'error'); return; }
+            const activeLoans = loans.filter(l => l.isbn === isbn && l.returnDate === null);
+            if (activeLoans.length >= book.copies) {
+                showStatus('No copies available', 'error');
+                return;
+            }
+            const today = new Date().toISOString().slice(0, 10);
+            loans.push({
+                id: loanIdCounter++,
+                readerRm: readerRm,
+                isbn: isbn,
+                loanDate: today,
+                returnDate: null
+            });
+            renderAll();
+            updateStats();
+            setSQL(`INSERT INTO loans (id, reader_rm, book_isbn, loan_date) VALUES (${loanIdCounter - 1}, '${readerRm}', '${isbn}', '${today}');`);
+            showStatus('Loan created successfully', 'success');
+        }
+
+        function returnLoanById(id) {
+            const loan = loans.find(l => l.id === id);
+            if (!loan) { showStatus('Loan not found', 'error'); return; }
+            if (loan.returnDate !== null) { showStatus('Already returned', 'error'); return; }
+            const today = new Date().toISOString().slice(0, 10);
+            loan.returnDate = today;
+            renderAll();
+            updateStats();
+            setSQL(`UPDATE loans SET return_date = '${today}' WHERE id = ${id};`);
+            showStatus(`Loan #${id} returned`, 'success');
+        }
+
+        function returnLoan() {
+            const id = parseInt(document.getElementById('loanReturn').value.trim());
+            if (!id) { showStatus('Enter a Loan ID', 'error'); return; }
+            returnLoanById(id);
+            document.getElementById('loanReturn').value = '';
+        }
+
+        // ===== START =====
+        init();
+    </script>
+
+</body>
+</html>
